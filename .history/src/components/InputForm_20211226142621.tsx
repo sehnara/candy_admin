@@ -8,7 +8,7 @@ const Container = styled.div`
 const InputForm = () => {
     return (
         <div>
-HELLO
+<HELLO></HELLO>
 
         </div>
     )
