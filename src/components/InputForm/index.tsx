@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect } from 'react';
+import { useState } from 'react';
 import styled from "styled-components";
 import Button from '../Button';
 import SelectBank from '../Selection';
@@ -68,14 +70,49 @@ const SubmitButton = styled.input`
 `;
 
 const SECTION_TITLE = [
-    {label : 'teamName', value : "단체명"}, 
-    {label : 'socialSecurity',value : "사업자번호(고유번호, 주민번호)"},
-    { label : 'account',value : "계좌번호"}, 
-    {label : 'password',value : "계좌비밀번호"}, 
-    {label : 'easyEnterId',value : "간편조회 아이디"},
-    {label : 'easyEnterPassword',value : "간편조회 비밀번호"}
+    {label : 'groupName', value : "단체명"}, 
+    {label : 'serialNumber',value : "사업자번호(고유번호, 주민번호)"},
+    {label : 'accountNumber',value : "계좌번호"}, 
+    {label : 'accountPassword',value : "계좌비밀번호"}, 
+    {label : 'easyId',value : "간편조회 아이디"},
+    {label : 'easyPassword',value : "간편조회 비밀번호"}
 ]
 const InputForm = () => {
+
+    const [enrollValues, setEnrollValues] = useState<any>({
+        groupName : "",
+        serialNumber : "",
+        bank : "",
+        accountNumber : "",
+        accountPassword :"",
+        easyId : "",
+        easyPassword :"",
+        agreement : [false, false]
+    });
+
+    const handleChange=(e:React.ChangeEvent<HTMLInputElement>, label: string)=> {
+        e.preventDefault();
+        setEnrollValues({...enrollValues, [label] : e.currentTarget.value})
+    }
+
+    const handleAgreement = (i : number) => {
+        const agreementValues = enrollValues.agreement.map((item:any, index:number)=>{
+            if(i === index){
+                return !item
+            }
+            else{
+                return item
+            }
+        })
+        setEnrollValues({...enrollValues, agreement : agreementValues})
+    }
+
+    const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=> {
+        e.preventDefault();
+        console.log(enrollValues)
+    }
+
+    
     return (
         <Container>
             {/* 로고 */}
@@ -84,32 +121,32 @@ const InputForm = () => {
             </LogoContainer>
             {/* 제목 */}
             <Title>캔디 모금계좌 등록</Title>
-            <form style={{display : 'flex', flexDirection : "column", justifyContent : 'center', alignItems : "center"}}>
-           
+            <form style={{display : 'flex', flexDirection : "column", justifyContent : 'center', alignItems : "center"}} onSubmit={handleSubmit}>
             {/* 인풋 폼 */}
             {
-                
                 [
                     SECTION_TITLE.map((item,index) => {
                         return (
-                            <div>
-                            {item.label === "account"&&<SelectBank/>}
+                            <div key={index}>
+                            {item.label === "accountNumber"&&<SelectBank enrollValues={enrollValues} setEnrollValues={setEnrollValues}/>}
                             <InputContainer key={index}>
                                 <Label htmlFor={item.label}>{item.value}</Label>
                                 {
-                                    item.label === "password" || item.label === "easyEnterPassword" ? 
-                                    <Input type="password" name={item.label} id={item.label}/>
-                                    :<Input type="text" name={item.label} id={item.label}/>
+                                    item.label === "accountPassword" || item.label === "easyPassword" ? 
+                                    <Input type="password" name={item.label} id={item.label} value={enrollValues[item.label]} onChange={(e)=>handleChange(e,item.label)}/>
+                                    :<Input type="text" name={item.label} id={item.label} value={enrollValues[item.label]} onChange={(e)=>handleChange(e,item.label)}/>
                                 }
-                                
                             </InputContainer>
                             </div>
                         )
                     })
                 ]
             }
-            <Button text="[필수] 금융기관 약관 동의"/>
-            <Button text="[필수] 개인정보 수집 및 이용 동의"/>
+            {
+                ["[필수] 금융기관 약관 동의", "[필수] 개인정보 수집 및 이용 동의"].map((item, index)=>{
+                    return <Button key ={index} text={item} index={index} enrollValues={enrollValues} handleAgreement={handleAgreement}/>
+                })
+            }
             <SubmitButton type="submit" value="제출하기"/>
             </form>
         </Container>

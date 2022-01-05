@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -26,16 +28,23 @@ border : none;
 
 const Banks = ['국민은행', '신한은행', '농협은행', '하나은행', 'SC은행', '우리은행', '새마을금고', '대구은행', '부산은행' ,'산업은행','수협은행', '경남은행','신협', '씨티은행', '광주은행', '우체국', '전북은행', '기업은행', '제주은행', 'K뱅크']
 
-const SelectBank = () => {
+const SelectBank = (props:any) => {
+    const {enrollValues, setEnrollValues} = props;
+    const [value, setValue] = useState("")
+
+    useEffect(()=>{
+        setEnrollValues({...enrollValues,bank:value})
+    },[value])
+
     return (
         <Container>
-            <Label htmlFor="bank">은행</Label>
-            <Select name="pets" id="pet-select">
+            <Label htmlFor="banks">은행</Label>
+            <Select name="banks" id="banks" value={value} onChange={e=>setValue(e.currentTarget.value)}>
                 <option value=""></option>
                 {
-                    Banks.map(item =>{
+                    Banks.map((item,index) =>{
                         return (
-                            <option value={item}>{item}</option>
+                            <option key ={index} value={item}>{item}</option>
                         )
                     })
                 }
